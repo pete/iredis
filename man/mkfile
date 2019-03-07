@@ -1,0 +1,7 @@
+<../mkconfig
+
+MAN=\
+	1/redis\
+	2/redis\
+
+<mkman

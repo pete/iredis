@@ -1,0 +1,15 @@
+<../../mkconfig
+
+TARG=\
+	redis.dis\
+
+SYSMODULES=\
+	arg.m\
+	bufio.m\
+	dial.m\
+	draw.m\
+	sys.m\
+
+DISBIN=$ROOT/dis
+
+<$ROOT/mkfiles/mkdis

@@ -1,0 +1,6 @@
+<../mkconfig
+
+MODS=\
+	redis.m
+
+<mkmod

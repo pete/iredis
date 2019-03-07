@@ -1,0 +1,74 @@
+.TH REDIS 1
+.SH NAME
+redis \- A client for the Redis database
+.SH SYNOPSIS
+.B redis
+[
+.B -i
+] [
+.BI -a " addr"
+] [
+.BI -d " db#"
+] [
+.BI -e " cmd1" [-e " cmd2" ...]
+]
+.I path
+.SH DESCRIPTION
+.I redis
+is a client for the Redis in-memory database.  For more information on Redis,
+see https://redis.io/.  Commands can be entered interactively and passed through
+the
+.I -e
+flag.
+
+Quoting is done with a single
+.I '
+and embedded quotes are done with a double-quote, as in the shell.
+
+.TP
+.BI -a " addr"
+The address to connect to.  The default is 
+.I tcp!localhost!6379
+, the default port for Redis servers.
+
+.TP
+.BI -d " db#"
+The database number to connect to.  The default is
+.I 0.
+See
+.B BUGS
+for a small caveat.
+
+.TP
+.BI -i
+Force interactive mode.  The default is to prompt interactively unless any
+commands are specified with the
+.I -e
+option.
+
+.TP
+.BI -e " cmd"
+Send a command to the server.  This option can be specified multiple times.
+
+.SH SOURCE
+/appl/cmd/redis.b
+.SH SEE ALSO
+.IR redis (2)
+,
+.IR sh-redis (1)
+
+.SH BUGS
+This is alpha software.  The author has used it and it seems fine.
+.PP
+The interface is not yet done.
+.PP
+There is, of course, no support (present or planned) for Unix sockets.
+.PP
+The
+.BI SELECT
+command is not interpreted specially, so the prompt does not update if you
+select a different DB.
+.PP
+The server is generally trusted.
+.PP
+Error reporting is poor at the moment.
