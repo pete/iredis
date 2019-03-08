@@ -1,0 +1,27 @@
+Inferno Redis Client:  A Very Alpha Software Release
+__        __         _                                        
+\ \      / /__  _ __| | _____    ___  _ __    _ __ ___  _   _ 
+ \ \ /\ / / _ \| '__| |/ / __|  / _ \| '_ \  | '_ ` _ \| | | |
+  \ V  V / (_) | |  |   <\__ \ | (_) | | | | | | | | | | |_| |
+   \_/\_/ \___/|_|  |_|\_\___/  \___/|_| |_| |_| |_| |_|\__, |
+                                                        |___/ 
+                      _     _            _ 
+ _ __ ___   __ _  ___| |__ (_)_ __   ___| |
+| '_ ` _ \ / _` |/ __| '_ \| | '_ \ / _ \ |
+| | | | | | (_| | (__| | | | | | | |  __/_|
+|_| |_| |_|\__,_|\___|_| |_|_|_| |_|\___(_)
+
+
+This code contains a library and an interactive client.  I am currently using
+the interactive client daily.  I like Redis.  If you start seeing fewer updates,
+that means I have found fewer bugs (either directly or by reports).
+
+I wanted to talk to Redis from Inferno without using os(10).
+
+Installing:  mk install.  Set $ROOT if you are doing it from outside Inferno.
+
+API Stability:  No.  The current API is bad and wrong.
+
+Documentation:  See the man pages.
+
+Plans:  Less buggy, better API, better man pages.  Filesystem interface.

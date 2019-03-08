@@ -165,6 +165,8 @@ parsecmd(s: string, qc: int): (list of string, int) {
 	r: list of string = nil;
 	pendtick := 0;
 	c := "";
+	# Amateur hour.  Open mic night at an empty comedy club.
+	# Needs a rewrite.  Don't read this loop.
 	while(s != "") {
 		if(pendtick) {
 			if(s[0] == qc) {
@@ -183,7 +185,8 @@ parsecmd(s: string, qc: int): (list of string, int) {
 		} else {
 			if(s[0] == qc) {
 				if(c != "") {
-					sys->fprint(sys->fildes(2), "Syntax error:  unexpected \"%c\".\n", qc);
+					sys->fprint(sys->fildes(2),
+						"Syntax error:  unexpected \"%c\".\n", qc);
 					return (nil, 0);
 				}
 				pendtick = 1;
@@ -208,7 +211,7 @@ rev[T](s: list of T, a: list of T): list of T {
 	return rev(tl s, hd s :: a);
 }
 
-rev2(s: list of (int, string), a: list of (int, string)): list of (int, string) {
+rev2(s, a: list of (int, string)): list of (int, string) {
 	if(s == nil)
 		return a;
 	return rev2(tl s, hd s :: a);

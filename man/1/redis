@@ -11,19 +11,22 @@ redis \- A client for the Redis database
 .BI -d " db#"
 ] [
 .BI -e " cmd1" [-e " cmd2" ...]
+] [
+.BI -q " quotechar"
 ]
-.I path
+
 .SH DESCRIPTION
 .I redis
-is a client for the Redis in-memory database.  For more information on Redis,
-see https://redis.io/.  Commands can be entered interactively and passed through
+is a client for the Redis in-memory database.  Commands can be entered interactively and passed through
 the
 .I -e
 flag.
 
-Quoting is done with a single
-.I '
-and embedded quotes are done with a double-quote, as in the shell.
+Quoting is done with
+.I "
+and embedded quotes are done by doubling the quote character, as in the shell.
+(Note that this differs from the official client that ships with Redis, which
+uses backslash.)
 
 .TP
 .BI -a " addr"
@@ -50,6 +53,10 @@ option.
 .BI -e " cmd"
 Send a command to the server.  This option can be specified multiple times.
 
+.TP
+.BI -q " quotechar"
+Change the quote character from the default.
+
 .SH SOURCE
 /appl/cmd/redis.b
 .SH SEE ALSO
@@ -57,18 +64,38 @@ Send a command to the server.  This option can be specified multiple times.
 ,
 .IR sh-redis (1)
 
+For more information on Redis, see https://redis.io/ .
+
 .SH BUGS
-This is alpha software.  The author has used it and it seems fine.
-.PP
-The interface is not yet done.
-.PP
-There is, of course, no support (present or planned) for Unix sockets.
+This is alpha software.  The author has used it and it seems fine.  Some things
+are missing.
 .PP
 The
 .BI SELECT
 command is not interpreted specially, so the prompt does not update if you
-select a different DB.
+select a different DB interactively.
+.PP
+Maybe the prompt should be more minimal and shouldn't mimic the default client's prompt anyway.
 .PP
 The server is generally trusted.
 .PP
 Error reporting is poor at the moment.
+.PP
+Redis loves to litter the output with carriage returns.  On a vt100 emulator
+this is less noticeable, but the
+.B INFO
+command is going to be ugly for anyone running this in a shell window or under
+.IR acme (1).
+.PP
+At present, if you want to use 
+.B PUBLISH
+or
+.B SUBSCRIBE
+you will have to issue repeated
+.B PING
+commands to get the results.  This may get fixed, but using the FS interface or
+the library might be more prudent than using the interactive command if you
+are doing things like Pub/Sub.  (
+.B BRPOP
+and friends work just fine, though.)
+

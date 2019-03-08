@@ -45,6 +45,12 @@ init(nil: ref Draw->Context, args: list of string) {
 			cmd = arg->earg() :: cmd;
 		'i' =>
 			interactive = 1;
+		'q' =>
+			quotechar = arg->earg()[0];
+			if(quotechar == 0) {
+				arg->usage();
+				raise "fail:usage";
+			}
 		'h' =>
 			arg->usage();
 			return;
@@ -74,6 +80,8 @@ init(nil: ref Draw->Context, args: list of string) {
 
 	# sys->fprint(sys->fildes(2), "redis: dialing %s, selecting %s\n", addr, dbno);
 	selectdb(io, dbno);
+
+	cmd = rev(cmd);
 
 	while(cmd != nil) {
 		(ls, donep) := parsecmd(hd cmd, quotechar);
@@ -109,4 +117,13 @@ init(nil: ref Draw->Context, args: list of string) {
 selectdb(io: ref Iobuf, dbno: string) {
 	sendcmd(io, parsecmd("SELECT " + dbno, 0).t0);
 	printresult(io);
+}
+
+rev[T](s: list of T): list of T {
+	r: list of T = nil;
+	while(s != nil) {
+		r = hd s :: r;
+		s = tl s;
+	}
+	return r;
 }

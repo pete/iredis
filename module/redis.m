@@ -1,7 +1,4 @@
-# THIS INTERFACE IS NOT TO BE CONSIDERED STABLE.
-# At the minimum, we need some better error-reporting.  It'd be better to make
-# a struct for the client than just the iobuf, and I'm going to put errors in
-# there.
+# This interface should not be considered stable.  See the documentation.
 Redis: module {
 	PATH: con "/dis/lib/redis.dis";
 
