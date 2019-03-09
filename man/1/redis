@@ -61,8 +61,6 @@ Change the quote character from the default.
 /appl/cmd/redis.b
 .SH SEE ALSO
 .IR redis (2)
-,
-.IR sh-redis (1)
 
 For more information on Redis, see https://redis.io/ .
 
