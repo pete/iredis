@@ -19,10 +19,29 @@ initmod(s: Sys, d: Dial, b: Bufio, st: String) {
 	debug = 0;
 }
 
-call(io: ref Iobuf, cmd: list of string): list of (int, string) {
-	if(!sendcmd(io, cmd))
+connect(addr: string): ref RedisClient {
+	conn := dial->dial(addr, nil);
+	if(conn == nil) {
+		if(debug)
+			sys->fprint(sys->fildes(2), "redis: dialing %s: %r\n", addr);
 		return nil;
-	return parseresult(io);
+	}
+
+	io := bufio->fopen(conn.dfd, bufio->ORDWR);
+	if(io == nil)
+		return nil;
+
+	return client(io);
+}
+
+client(io: ref Iobuf): ref RedisClient {
+	return ref RedisClient(io);
+}
+
+RedisClient.call(c: self ref RedisClient, cmd: list of string): list of (int, string) {
+	if(!c.sendcmd(cmd))
+		return nil;
+	return c.parseresult();
 }
 
 setdebug(state: int) {
@@ -33,7 +52,7 @@ setdebug(state: int) {
 # particular, we expect to only parse atoms and arrays and we flatten all of the
 # data we get back into a list of (tag, data) tuples, even if the data that
 # comes back is not a list.
-parseresult(io: ref Iobuf): list of (int, string) {
+RedisClient.parseresult(cl: self ref RedisClient): list of (int, string) {
 	r: list of (int, string) = nil;
 	lt := array[256] of {
 		'-' => RErr,
@@ -45,15 +64,15 @@ parseresult(io: ref Iobuf): list of (int, string) {
 	sys->fprint(sys->fildes(2), "Connection dropped:  %r\n");
 	raise "fail:errors";
 
-	c := io.getb();
+	c := cl.io.getb();
 	if(debug)
 		sys->fprint(sys->fildes(2), "« %c", c);
 	case c {
 	'-' or ':' or '+' =>
-		ln := chomp(io.gets('\n'));
+		ln := chomp(cl.io.gets('\n'));
 		r = (lt[c], ln) :: r;
 	'$' => # String
-		ln := io.gets('\n');
+		ln := cl.io.gets('\n');
 		sz := str->toint(ln, 10).t0;
 		if(debug)
 			sys->fprint(sys->fildes(2), "%s\n", ln);
@@ -63,10 +82,10 @@ parseresult(io: ref Iobuf): list of (int, string) {
 			r = (RStr, chomp(ln)) :: r;
 		}
 	'*' => # Array
-		ln := io.gets('\n');
+		ln := cl.io.gets('\n');
 		sz := str->toint(ln, 10).t0;
 		for(i := sz; i > 0; i--) {
-			nx := parseresult(io);
+			nx := cl.parseresult();
 			while(nx != nil) {
 				r = hd nx :: r;
 				nx = tl nx;
@@ -80,12 +99,12 @@ parseresult(io: ref Iobuf): list of (int, string) {
 	return rev2(r, nil);
 }
 
-printresult(io: ref Iobuf) {
+RedisClient.printresult(cl: self ref RedisClient) {
 	# Error:  -ERROR\r\n
 	# Ints:  :NUMBER\r\n
 	# Strings:  $size\r\nRAW\r\n *or* +RAW\r\n
 	# Lists:  *size\r\nSTRING1 or INT1\r\n⋯\r\n
-	c := io.getb();
+	c := cl.io.getb();
 	if(debug)
 		sys->fprint(sys->fildes(2), "« %c", c);
 	
@@ -95,12 +114,12 @@ printresult(io: ref Iobuf) {
 	}
 	case c {
 	'-' or ':' or '+' =>
-		ln := chomp(io.gets('\n'));
+		ln := chomp(cl.io.gets('\n'));
 		if(debug)
 			sys->fprint(sys->fildes(2), "%s\n", ln);
 		sys->print("%s\n", ln);
 	'$' =>
-		ln := io.gets('\n');
+		ln := cl.io.gets('\n');
 		if(debug)
 			sys->fprint(sys->fildes(2), "%s\n", ln);
 		sz := str->toint(ln, 10).t0;
@@ -109,13 +128,13 @@ printresult(io: ref Iobuf) {
 			return;
 		}
 		buf := array[sz + 2] of byte; # For the extra crlf.
-		i := io.read(buf, len buf);
+		i := cl.io.read(buf, len buf);
 		if(debug)
 			sys->fprint(sys->fildes(2), "%s\n", string buf[:i]);
 		s := chomp(string buf[:i]);
 		sys->print("%s\n", s);
 	'*' =>
-		ln := io.gets('\n');
+		ln := cl.io.gets('\n');
 		if(debug)
 			sys->fprint(sys->fildes(2), "%s\n", ln);
 		sz := str->toint(ln, 10).t0;
@@ -124,7 +143,7 @@ printresult(io: ref Iobuf) {
 			return;
 		}
 		for(i := sz; i; i--)
-			printresult(io);
+			cl.printresult();
 	* =>
 		sys->fprint(sys->fildes(2), "Mystery response: %d  %r\n", c);
 		raise "fail:errors";
@@ -139,13 +158,13 @@ chomp(s: string): string {
 	return s;
 }
 
-sendcmd(io: ref Iobuf, cmd: list of string): int {
+RedisClient.sendcmd(c: self ref RedisClient, cmd: list of string): int {
 	cs := packcmd(cmd);
 	if(debug)
 		sys->fprint(sys->fildes(2), "» %s\n", cs);
 	if(cs == nil)
 		return 0;
-	io.puts(cs);
+	c.io.puts(cs);
 	return 1;
 }
 

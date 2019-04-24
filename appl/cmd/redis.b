@@ -7,7 +7,7 @@ include "arg.m";
 include "bufio.m"; bufio: Bufio; Iobuf: import bufio;
 include "string.m"; str: String;
 include "redis.m"; redis: Redis;
-	call, sendcmd, packcmd, parsecmd, printresult, parseresult: import redis;
+	RedisClient, packcmd, parsecmd: import redis;
 
 RedisC: module {
 	init: fn(nil: ref Draw->Context, args: list of string);
@@ -20,6 +20,9 @@ init(nil: ref Draw->Context, args: list of string) {
 	bufio = load Bufio Bufio->PATH;
 	str = load String String->PATH;
 	redis = load Redis Redis->PATH;
+
+	debug := 0;
+
 	if(redis == nil) {
 		sys->fprint(sys->fildes(2), "Can't load %s! %r\n", Redis->PATH);
 		raise "fail:load";
@@ -55,7 +58,7 @@ init(nil: ref Draw->Context, args: list of string) {
 			arg->usage();
 			return;
 		'D' =>
-			redis->setdebug(1);
+			debug = 1;
 		* =>
 			arg->usage();
 			raise "fail:usage";
@@ -63,23 +66,21 @@ init(nil: ref Draw->Context, args: list of string) {
 	}
 	if(cmd == nil)
 		interactive = 1;
-	
-	conn := dial->dial(addr, nil);
-	if(conn == nil) {
-		sys->fprint(sys->fildes(2), "redis: dialing %s: %r\n", addr);
+	redis->setdebug(debug);
+
+	c := redis->connect(addr);
+	if(c == nil) {
+		sys->fprint(sys->fildes(2), "redis: connecting to %s: %r\n", addr);
 		raise "fail:errors";
 	}
 
-	io := bufio->fopen(conn.dfd, bufio->ORDWR);
-	if(io == nil)
-		raise "fail:bufio";
-
 	stdin := bufio->fopen(sys->fildes(0), bufio->OREAD);
-	if(io == nil)
+	if(stdin == nil)
 		raise "fail:bufio";
 
-	# sys->fprint(sys->fildes(2), "redis: dialing %s, selecting %s\n", addr, dbno);
-	selectdb(io, dbno);
+	if(debug)
+		sys->fprint(sys->fildes(2), "redis: dialing %s, selecting %s\n", addr, dbno);
+	selectdb(c, dbno);
 
 	cmd = rev(cmd);
 
@@ -89,9 +90,9 @@ init(nil: ref Draw->Context, args: list of string) {
 			arg->usage();
 			raise "fail:parse";
 		}
-		if(sendcmd(io, ls)) {
+		if(c.sendcmd(ls)) {
 			cmd = tl cmd;
-			printresult(io);
+			c.printresult();
 		}
 	}
 	if(!interactive)
@@ -108,15 +109,15 @@ init(nil: ref Draw->Context, args: list of string) {
 		(ls, donep) := parsecmd(l, quotechar);
 		if(donep) {
 			l = "";
-			if(sendcmd(io, ls))
-				printresult(io);
+			if(c.sendcmd(ls))
+				c.printresult();
 		}
 	}
 }
 
-selectdb(io: ref Iobuf, dbno: string) {
-	sendcmd(io, parsecmd("SELECT " + dbno, 0).t0);
-	printresult(io);
+selectdb(c: ref Redis->RedisClient, dbno: string) {
+	c.sendcmd(parsecmd("SELECT " + dbno, 0).t0);
+	c.printresult();
 }
 
 rev[T](s: list of T): list of T {
