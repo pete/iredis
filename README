@@ -1,27 +1,28 @@
-Inferno Redis Client:  A Very Alpha Software Release
-__        __         _                                        
-\ \      / /__  _ __| | _____    ___  _ __    _ __ ___  _   _ 
- \ \ /\ / / _ \| '__| |/ / __|  / _ \| '_ \  | '_ ` _ \| | | |
-  \ V  V / (_) | |  |   <\__ \ | (_) | | | | | | | | | | |_| |
-   \_/\_/ \___/|_|  |_|\_\___/  \___/|_| |_| |_| |_| |_|\__, |
-                                                        |___/ 
-                      _     _            _ 
- _ __ ___   __ _  ___| |__ (_)_ __   ___| |
-| '_ ` _ \ / _` |/ __| '_ \| | '_ \ / _ \ |
-| | | | | | (_| | (__| | | | | | | |  __/_|
-|_| |_| |_|\__,_|\___|_| |_|_|_| |_|\___(_)
+- Inferno Redis Client:  An Apparently Working Software Release
 
+This code contains a library and an interactive client for talking to Redis
+(https://redis.io/) from the Inferno OS
+(http://www.vitanuova.com/inferno/index.html).  I am currently using the
+interactive client regularly.
 
-This code contains a library and an interactive client.  I am currently using
-the interactive client daily.  I like Redis.  If you start seeing fewer updates,
-that means I have found fewer bugs (either directly or by reports).
+I use Redis for fun and profit, as well as Inferno.  I wanted to talk to Redis
+from Inferno without using os(10).
 
-I wanted to talk to Redis from Inferno without using os(10).
+- Installing
 
-Installing:  mk install.  Set $ROOT if you are doing it from outside Inferno.
+	% mk install
 
-API Stability:  No.  The current API is bad and wrong.
+Set $ROOT if you are running mk from the host OS, you will need to add
+'ROOT=/path/to/inferno' to the mk command.
 
-Documentation:  See the man pages.
+- Documentation
 
-Plans:  Less buggy, better API, better man pages.  Filesystem interface.
+The command and the library have man pages (which note some bugs).
+
+- Future development
+
+It'd be nice to fix some of the bugs by special-casing the commands.
+
+The man pages could stand some help.
+
+A filesystem interface would be nice.

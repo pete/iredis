@@ -91,9 +91,9 @@ or
 .B SUBSCRIBE
 you will have to issue repeated
 .B PING
-commands to get the results.  This may get fixed, but using the FS interface or
-the library might be more prudent than using the interactive command if you
-are doing things like Pub/Sub.  (
+commands to get the results.  This may get fixed, but using the (planned) FS
+interface or the library might be more prudent than using the interactive
+command if you are doing things like Pub/Sub.  (
 .B BRPOP
 and friends work just fine, though.)
 

@@ -61,9 +61,6 @@ RedisClient.parseresult(cl: self ref RedisClient): list of (int, string) {
 		* => -1,
 	};
 
-	sys->fprint(sys->fildes(2), "Connection dropped:  %r\n");
-	raise "fail:errors";
-
 	c := cl.io.getb();
 	if(debug)
 		sys->fprint(sys->fildes(2), "« %c", c);
