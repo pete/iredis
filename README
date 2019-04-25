@@ -1,28 +1,30 @@
 - Inferno Redis Client:  An Apparently Working Software Release
 
-This code contains a library and an interactive client for talking to Redis
-(https://redis.io/) from the Inferno OS
-(http://www.vitanuova.com/inferno/index.html).  I am currently using the
-interactive client regularly.
+This is a library and an interactive client for the Inferno operating system 
+(http://www.vitanuova.com/inferno/index.html) that allows it to talk to Redis
+(https://redis.io/).  That is, it is a native version of Redis's bundled
+`redis-cli` tool and an easy-to-use client library.
 
 I use Redis for fun and profit, as well as Inferno.  I wanted to talk to Redis
-from Inferno without using os(10).
+from Inferno without using os(10).  I am currently using the interactive client
+regularly.
 
 - Installing
 
 	% mk install
 
-Set $ROOT if you are running mk from the host OS, you will need to add
+Set $ROOT if you are running mk from the host OS, you will need to supply
 'ROOT=/path/to/inferno' to the mk command.
 
 - Documentation
 
-The command and the library have man pages (which note some bugs).
+The command and the library have man pages.  The short version is that after you
+install it, you can type 'redis' to use the interactive client.
 
 - Future development
 
 It'd be nice to fix some of the bugs by special-casing the commands.
 
-The man pages could stand some help.
+The man pages could stand some polish.
 
 A filesystem interface would be nice.
