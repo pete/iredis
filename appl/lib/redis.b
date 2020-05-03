@@ -172,7 +172,7 @@ packcmd(cmd: list of string): string {
 	while(cmd != nil) {
 		s := hd cmd;
 		cmd = tl cmd;
-		r += sys->sprint("$%d\r\n%s\r\n", len s, s);
+		r += sys->sprint("$%d\r\n%s\r\n", len array of byte s, s);
 	}
 	return r;
 }
